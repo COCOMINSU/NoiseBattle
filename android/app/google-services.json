@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "144488799748",
+    "project_id": "noisebattle-2bd2b",
+    "storage_bucket": "noisebattle-2bd2b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:144488799748:android:d9612bf227496034271f51",
+        "android_client_info": {
+          "package_name": "com.example.noisebattle"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "144488799748-jok0fnt8cqvlmf9lgkoaeik73m76ul8g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.noisebattle",
+            "certificate_hash": "d6dfd845ff3d169617ca6f07c783bc313a03a068"
+          }
+        },
+        {
+          "client_id": "144488799748-s483ssmh7gk6ls9huti2joqlo87589mj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBzmYIksDPa9KuNRA4mAB23cIRhUJFXLjE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "144488799748-s483ssmh7gk6ls9huti2joqlo87589mj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

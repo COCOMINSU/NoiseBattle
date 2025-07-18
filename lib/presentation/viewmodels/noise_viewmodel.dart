@@ -1,7 +1,12 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:noise_meter/noise_meter.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../core/services/noise_service.dart';
+import '../../core/services/noise_recording_service.dart';
+import '../../core/services/noise_record_service.dart';
+import '../../data/models/noise_record_model.dart';
 
 /// 소음 측정 화면의 상태를 관리하는 ViewModel
 ///

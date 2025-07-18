@@ -4,8 +4,7 @@ import '../viewmodels/noise_map_viewmodel.dart';
 class NoiseMapLegendWidget extends StatelessWidget {
   final List<LegendItem> legendItems;
 
-  const NoiseMapLegendWidget({Key? key, required this.legendItems})
-    : super(key: key);
+  const NoiseMapLegendWidget({super.key, required this.legendItems});
 
   @override
   Widget build(BuildContext context) {

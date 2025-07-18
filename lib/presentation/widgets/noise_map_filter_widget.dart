@@ -4,8 +4,7 @@ import '../viewmodels/noise_map_viewmodel.dart';
 class NoiseMapFilterWidget extends StatefulWidget {
   final NoiseMapViewModel viewModel;
 
-  const NoiseMapFilterWidget({Key? key, required this.viewModel})
-    : super(key: key);
+  const NoiseMapFilterWidget({super.key, required this.viewModel});
 
   @override
   State<NoiseMapFilterWidget> createState() => _NoiseMapFilterWidgetState();

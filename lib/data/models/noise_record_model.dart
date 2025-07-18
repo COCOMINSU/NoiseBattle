@@ -85,6 +85,10 @@ class NoiseRecordModel {
     List<String> tags = const [],
     bool isPublic = false,
   }) {
+    // measurements 데이터 처리
+    final measurementsData =
+        recordingData['measurements'] as Map<String, dynamic>? ?? {};
+
     return NoiseRecordModel(
       id: '', // Firestore에서 자동 생성됨
       userId: userId,
@@ -94,16 +98,16 @@ class NoiseRecordModel {
       measurements: {
         'duration': recordingData['duration'] ?? 0,
         'fileSize': recordingData['fileSize'] ?? 0,
-        // 추후 실시간 측정 데이터에서 추가할 통계들
-        'averageDecibel': 0.0,
-        'maxDecibel': 0.0,
-        'minDecibel': 0.0,
+        'averageDecibel': measurementsData['averageDecibel'] ?? 0.0,
+        'maxDecibel': measurementsData['maxDecibel'] ?? 0.0,
+        'minDecibel': measurementsData['minDecibel'] ?? 0.0,
+        'measurementCount': measurementsData['measurementCount'] ?? 0,
       },
       location: recordingData['location'] ?? {},
       deviceInfo: {
-        'platform': '', // 추후 device_info_plus로 수집
-        'model': '',
-        'osVersion': '',
+        'platform': 'Android', // 현재 Android만 지원
+        'model': 'Unknown',
+        'osVersion': 'Unknown',
       },
       audioFileUrl: recordingData['audioFileUrl'],
       recordedAt: DateTime.parse(recordingData['recordedAt']),

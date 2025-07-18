@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:noise_meter/noise_meter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../core/services/noise_recording_service.dart';
 import '../../core/services/noise_record_service.dart';
@@ -33,6 +34,10 @@ class NoiseRecordingViewModel extends ChangeNotifier {
   double _avgDecibel = 0.0;
   final List<double> _measurements = [];
   int _measurementCount = 0;
+
+  // 1초 간격 측정을 위한 변수들
+  final List<double> _tempReadings = []; // 임시 측정값 저장
+  DateTime? _lastProcessedTime; // 마지막 처리 시간
 
   // 녹음 세션 상태
   bool _isRecording = false;
@@ -144,21 +149,43 @@ class NoiseRecordingViewModel extends ChangeNotifier {
     _errorSubscription = _recordingService.errorStream.listen(_onServiceError);
   }
 
-  /// 소음 데이터 수신 핸들러
+  /// 소음 데이터 수신 핸들러 (1초 간격으로 처리)
   void _onNoiseReading(NoiseReading reading) {
+    // 현재 측정값을 임시 저장
+    _tempReadings.add(reading.meanDecibel);
+
+    // UI용 실시간 값 업데이트 (즉시 반영)
     _currentDecibel = reading.meanDecibel;
-    _measurementCount++;
 
-    _measurements.add(_currentDecibel);
-    _updateStatistics();
+    // 1초마다 한 번씩만 처리
+    final now = DateTime.now();
+    if (_lastProcessedTime == null ||
+        now.difference(_lastProcessedTime!).inMilliseconds >= 1000) {
+      // 임시 측정값들의 평균 계산
+      if (_tempReadings.isNotEmpty) {
+        final avgReading =
+            _tempReadings.reduce((a, b) => a + b) / _tempReadings.length;
 
-    notifyListeners();
+        // 통계에 추가
+        _measurementCount++;
+        _measurements.add(avgReading);
+        _updateStatistics();
 
-    if (kDebugMode && _measurementCount % 10 == 0) {
-      debugPrint(
-        '📊 측정 $_measurementCount회 - 현재: ${_currentDecibel.toStringAsFixed(1)}dB',
-      );
+        // 임시 측정값 초기화
+        _tempReadings.clear();
+
+        if (kDebugMode) {
+          debugPrint(
+            '📊 1초 측정 $_measurementCount회 - 평균: ${avgReading.toStringAsFixed(1)}dB (샘플 ${_tempReadings.length}개)',
+          );
+        }
+      }
+
+      _lastProcessedTime = now;
     }
+
+    // UI 업데이트 (실시간)
+    notifyListeners();
   }
 
   /// 소음 스트림 에러 핸들러
@@ -243,31 +270,11 @@ class NoiseRecordingViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // 위치 서비스 확인
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        throw Exception('위치 서비스가 비활성화되어 있습니다.');
-      }
+      // NoiseRecordingService의 refreshLocation 메서드 사용 (카카오 API 포함)
+      await _recordingService.refreshLocation();
 
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          throw Exception('위치 권한이 거부되었습니다.');
-        }
-      }
-
-      if (permission == LocationPermission.deniedForever) {
-        throw Exception('위치 권한이 영구적으로 거부되었습니다.');
-      }
-
-      // 현재 위치 가져오기
-      _currentPosition = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-        timeLimit: const Duration(seconds: 10),
-      );
-
-      // 주소 정보는 NoiseRecordingService에서 처리
+      // 서비스에서 위치 정보 가져오기
+      _currentPosition = _recordingService.currentPosition;
       _currentAddress = _recordingService.currentAddress;
 
       if (kDebugMode) {
@@ -283,6 +290,65 @@ class NoiseRecordingViewModel extends ChangeNotifier {
     } finally {
       _isLocationLoading = false;
       notifyListeners();
+    }
+  }
+
+  /// 좌표를 주소로 변환
+  Future<void> _getAddressFromCoordinates() async {
+    if (_currentPosition == null) return;
+
+    try {
+      final placemarks = await placemarkFromCoordinates(
+        _currentPosition!.latitude,
+        _currentPosition!.longitude,
+      );
+
+      if (placemarks.isNotEmpty) {
+        final place = placemarks.first;
+
+        // 대한민국 주소 체계: 시/도 + 시/군/구 + 읍/면/동 + 상세주소
+        final addressParts = <String>[];
+
+        // 1. 시/도 (administrativeArea)
+        if (place.administrativeArea != null &&
+            place.administrativeArea!.isNotEmpty) {
+          addressParts.add(place.administrativeArea!);
+        }
+
+        // 2. 시/군/구 (locality)
+        if (place.locality != null && place.locality!.isNotEmpty) {
+          addressParts.add(place.locality!);
+        }
+
+        // 3. 읍/면/동 (subLocality)
+        if (place.subLocality != null && place.subLocality!.isNotEmpty) {
+          addressParts.add(place.subLocality!);
+        }
+
+        // 4. 상세 주소 (thoroughfare, subThoroughfare)
+        final detailAddress = <String>[];
+        if (place.thoroughfare != null && place.thoroughfare!.isNotEmpty) {
+          detailAddress.add(place.thoroughfare!);
+        }
+        if (place.subThoroughfare != null &&
+            place.subThoroughfare!.isNotEmpty) {
+          detailAddress.add(place.subThoroughfare!);
+        }
+        if (detailAddress.isNotEmpty) {
+          addressParts.add(detailAddress.join(' '));
+        }
+
+        _currentAddress = addressParts.join(' ');
+
+        if (kDebugMode) {
+          print('🏠 주소 변환 완료: $_currentAddress');
+        }
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('❌ 주소 변환 실패: $e');
+      }
+      // 주소 변환 실패는 치명적이지 않으므로 계속 진행
     }
   }
 
@@ -512,6 +578,10 @@ class NoiseRecordingViewModel extends ChangeNotifier {
     _avgDecibel = 0.0;
     _measurementCount = 0;
     _measurements.clear();
+
+    // 1초 간격 측정 변수들 초기화
+    _tempReadings.clear();
+    _lastProcessedTime = null;
   }
 
   /// 로딩 상태 설정

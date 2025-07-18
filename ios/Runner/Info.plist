@@ -45,5 +45,25 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	
+	<!-- 소음 측정을 위한 마이크 권한 -->
+	<key>NSMicrophoneUsageDescription</key>
+	<string>소음 측정 및 녹음 기능을 위해 마이크 권한이 필요합니다.</string>
+	
+	<!-- 위치 정보 수집을 위한 권한 -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>소음 데이터에 위치 정보를 추가하기 위해 위치 권한이 필요합니다.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>소음 데이터에 위치 정보를 추가하기 위해 위치 권한이 필요합니다.</string>
+	
+	<!-- 사진 및 카메라 권한 (게시글 이미지 업로드용) -->
+	<key>NSCameraUsageDescription</key>
+	<string>게시글에 사진을 첨부하기 위해 카메라 권한이 필요합니다.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>게시글에 사진을 첨부하기 위해 사진 라이브러리 접근 권한이 필요합니다.</string>
+	
+	<!-- Google Maps API Key -->
+	<key>GMSApiKey</key>
+	<string>AIzaSyAkWOK0fMUoNsa8LnIiexI-gsLGidP0hpA</string>
 </dict>
 </plist>

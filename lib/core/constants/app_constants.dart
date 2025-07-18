@@ -36,4 +36,13 @@ class AppConstants {
   static const double dangerousNoiseLevel = 85.0; // dB
   static const double loudNoiseLevel = 70.0; // dB
   static const double moderateNoiseLevel = 55.0; // dB
+
+  // Google Maps API 키
+  static const String googleMapsApiKey =
+      'AIzaSyAkWOK0fMUoNsa8LnIiexI-gsLGidP0hpA';
+
+  // Firebase 프로젝트 설정
+  static const String firebaseProjectId = 'noisebattle-2bd2b';
+  static const String firebaseStorageBucket =
+      'noisebattle-2bd2b.firebasestorage.app';
 }

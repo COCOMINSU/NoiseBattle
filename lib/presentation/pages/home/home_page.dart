@@ -6,7 +6,7 @@ import '../../viewmodels/noise_map_viewmodel.dart';
 import '../../viewmodels/noise_ranking_viewmodel.dart';
 import '../settings/theme_settings_page.dart';
 
-import '../noise/noise_recording_page.dart';
+import '../noise/noise_measurement_page.dart';
 import '../noise/noise_map_page.dart';
 import '../noise/noise_ranking_page.dart';
 import '../community/community_main_page.dart';
@@ -54,11 +54,11 @@ class _HomePageState extends State<HomePage> {
         currentIndex: _currentIndex,
         onTap: (index) {
           if (index == 1) {
-            // 소음녹음 탭 클릭 시 NoiseRecordingPage로 이동
+            // 소음측정 탭 클릭 시 NoiseMeasurementPage로 이동
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const NoiseRecordingPage(),
+                builder: (context) => const NoiseMeasurementPage(),
               ),
             );
           } else {
@@ -144,7 +144,7 @@ class _HomePageState extends State<HomePage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const NoiseRecordingPage(),
+                        builder: (context) => const NoiseMeasurementPage(),
                       ),
                     );
                   },

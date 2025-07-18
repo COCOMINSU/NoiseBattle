@@ -123,13 +123,14 @@ class _FileNameInputDialogState extends State<FileNameInputDialog> {
 
             const SizedBox(height: 16),
 
-            // 제목 입력 (선택사항)
+            // 내용 입력 (선택사항)
             TextField(
               controller: _titleController,
+              maxLines: 3,
               decoration: const InputDecoration(
-                labelText: '제목 (선택사항)',
-                hintText: '예: 아파트 위층 소음',
-                prefixIcon: Icon(Icons.title),
+                labelText: '내용 (선택사항)',
+                hintText: '예: 아파트 위층에서 들려오는 소음, 시간이나 상황, 소음에 대한 설명을 간략히 적어주세요',
+                prefixIcon: Icon(Icons.description),
                 border: OutlineInputBorder(),
               ),
             ),
@@ -234,7 +235,7 @@ class _FileNameInputDialogState extends State<FileNameInputDialog> {
                   ),
                   SizedBox(height: 4),
                   Text(
-                    '• 날짜와 시간을 포함하면 구분하기 쉬워요\n• 장소나 상황을 명시하면 나중에 찾기 편해요\n• 한글, 영문, 숫자, 언더바(_), 하이픈(-)만 사용하세요',
+                    '• 날짜와 시간을 포함하면 구분하기 쉬워요\n• 장소나 상황을 명시하면 나중에 찾기 편해요\n• 내용에는 소음 상황이나 시간대 등을 자세히 적어주세요\n• 한글, 영문, 숫자, 언더바(_), 하이픈(-)만 사용하세요',
                     style: TextStyle(fontSize: 11, color: Colors.blue),
                   ),
                 ],
